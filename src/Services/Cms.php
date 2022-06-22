@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace FitnessCommon\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -33,7 +33,6 @@ class Cms
         if ($cachedResponse = Cache::store('cms-caches')->get($path)) {
             return $cachedResponse;
         }
-
 
         $response = $this->getApi($path, $params);
 

@@ -2,7 +2,7 @@
 
 // Credit to https://jessarcher.com/blog/httpable-exceptions/ for this idea
 
-namespace App\Exceptions;
+namespace FitnessCommon\Exceptions;
 
 use Illuminate\Foundation\Application;
 

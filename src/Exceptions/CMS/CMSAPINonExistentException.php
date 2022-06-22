@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions;
+namespace FitnessCommon\Exceptions;
 
 use Throwable;
 use Exception;

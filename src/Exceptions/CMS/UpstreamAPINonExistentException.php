@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exceptions;
+namespace FitnessCommon\Exceptions;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Exception;

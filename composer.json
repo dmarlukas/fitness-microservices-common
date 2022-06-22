@@ -1,0 +1,25 @@
+{
+    "name": "domesticcatsoftwareptyltd/fitness-microservices-common",
+    "description": "Fitness Microservice Common",
+    "autoload": {
+        "psr-4": {
+            "FitnessCommon\\": "src/"
+        }
+    },
+    "require": {
+        "auth0/login": "^6.4",
+        "guzzlehttp/guzzle": "^7.0.1"
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

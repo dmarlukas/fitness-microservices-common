@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace FitnessCommon\Controllers;
 
-use App\Models\User;
-use App\Services\Cms;
-use App\Services\Subscription;
+use FitnessCommon\Models\User;
+use FitnessCommon\Services\Subscription;
 
 use Auth0\SDK\Helpers\JWKFetcher;
 use Auth0\SDK\Helpers\Tokens\AsymmetricVerifier;
 use Auth0\SDK\Helpers\Tokens\IdTokenVerifier;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
+
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -21,12 +20,13 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
-use App\Exceptions\IDTokenVerificationException;
-use App\Exceptions\UpstreamAPINonExistentException;
-use App\Exceptions\UpstreamHTTPException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use FitnessCommon\Exceptions\IDTokenVerificationException;
+use FitnessCommon\Exceptions\UpstreamAPINonExistentException;
+use FitnessCommon\Exceptions\UpstreamHTTPException;
 use Throwable;
 
-class MicroserviceController extends BaseController
+class TokenAuthController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
@@ -192,23 +192,5 @@ class MicroserviceController extends BaseController
         if ($user) {
             return $user->id;
         }
-    }
-
-    /**
-     * @throws UpstreamHTTPException
-     * @throws FileNotFoundException
-     * @throws Throwable
-     */
-    public function getCmsApi($endpoint)
-    {
-        if (strpos($_SERVER['PHP_SELF'],'phpunit') !== false) {
-            $fixture = Storage::disk('cms-mocks')->get($endpoint . '.json');
-            return json_decode($fixture, true);
-        }
-
-        /** @var Cms $cmsService */
-        $cmsService = app(Cms::class);
-
-        return $cmsService->getApi($endpoint);
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Exceptions;
+namespace FitnessCommon\Exceptions;
 
-use App\Exceptions\Httpable;
+use FitnessCommon\Exceptions\Httpable;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Exception;
