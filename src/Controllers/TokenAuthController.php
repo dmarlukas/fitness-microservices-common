@@ -1,9 +1,9 @@
 <?php
 
-namespace FitnessCommon\Controllers;
+namespace Fitness\MSCommon\Controllers;
 
-use FitnessCommon\Models\User;
-use FitnessCommon\Services\Subscription;
+use Fitness\MSCommon\Models\User;
+use Fitness\MSCommon\Services\Subscription;
 
 use Auth0\SDK\Helpers\JWKFetcher;
 use Auth0\SDK\Helpers\Tokens\AsymmetricVerifier;
@@ -21,9 +21,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use FitnessCommon\Exceptions\IDTokenVerificationException;
-use FitnessCommon\Exceptions\UpstreamAPINonExistentException;
-use FitnessCommon\Exceptions\UpstreamHTTPException;
+use Fitness\MSCommon\Exceptions\IDTokenVerificationException;
+use Fitness\MSCommon\Exceptions\UpstreamAPINonExistentException;
+use Fitness\MSCommon\Exceptions\UpstreamHTTPException;
 use Throwable;
 
 class TokenAuthController extends BaseController

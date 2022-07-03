@@ -1,6 +1,6 @@
 <?php
 
-namespace FitnessCommon\Models;
+namespace Fitness\MSCommon\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

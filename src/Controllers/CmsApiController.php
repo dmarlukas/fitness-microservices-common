@@ -1,9 +1,9 @@
 <?php
 
-namespace FitnessCommon\Controllers;
+namespace Fitness\MSCommon\Controllers;
 
 use Illuminate\Support\Facades\Storage;
-use FitnessCommon\Services\Cms;
+use Fitness\MSCommon\Services\Cms;
 
 class CmsApiController extends BaseController
 {

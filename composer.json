@@ -3,7 +3,7 @@
     "description": "Fitness Microservice Common",
     "autoload": {
         "psr-4": {
-            "FitnessCommon\\": "src/"
+            "Fitness\MSCommon\\": "src/"
         }
     },
     "require": {

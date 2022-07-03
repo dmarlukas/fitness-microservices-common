@@ -1,6 +1,6 @@
 <?php
 
-namespace FitnessCommon\Services;
+namespace Fitness\MSCommon\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
