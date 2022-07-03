@@ -3,12 +3,12 @@
     "description": "Fitness Microservice Common",
     "autoload": {
         "psr-4": {
-            "Fitness\MSCommon\\": "src/"
+            "Fitness\\MSCommon\\": "src/"
         }
     },
     "require": {
         "auth0/login": "^6.4",
-        "guzzlehttp/guzzle": "^7.0.1"
+        "guzzlehttp/guzzle": "^7.2"
     },
     "extra": {
         "laravel": {
