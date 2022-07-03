@@ -7,8 +7,6 @@
         }
     },
     "require": {
-        "auth0/login": "^6.4",
-        "guzzlehttp/guzzle": "^7.2"
     },
     "extra": {
         "laravel": {
