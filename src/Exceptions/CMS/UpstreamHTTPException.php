@@ -2,9 +2,9 @@
 
 namespace Fitness\MSCommon\Exceptions;
 
-use Exception;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Exception;
 
 class UpstreamHTTPException extends Exception implements HttpExceptionInterface {
     use Httpable;

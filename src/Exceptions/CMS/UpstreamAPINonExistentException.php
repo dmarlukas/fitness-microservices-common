@@ -1,8 +1,8 @@
 <?php
 
 namespace Fitness\MSCommon\Exceptions;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Exception;
 
 class UpstreamAPINonExistentException extends Exception implements HttpExceptionInterface {
