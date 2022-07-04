@@ -1,11 +1,11 @@
 <?php
 
-namespace Fitness\MSCommon\Controllers;
+namespace Fitness\MSCommon\Traits;
 
 use Illuminate\Support\Facades\Storage;
 use Fitness\MSCommon\Services\Cms;
 
-class CmsApiController extends BaseController
+trait UsesCMSAPI
 {
     /**
      * @throws UpstreamHTTPException

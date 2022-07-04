@@ -1,6 +1,6 @@
 <?php
 
-namespace Fitness\MSCommon\Controllers;
+namespace Fitness\MSCommon\Traits;
 
 use Fitness\MSCommon\Models\User;
 use Fitness\MSCommon\Services\Subscription;
@@ -9,27 +9,11 @@ use Auth0\SDK\Helpers\JWKFetcher;
 use Auth0\SDK\Helpers\Tokens\AsymmetricVerifier;
 use Auth0\SDK\Helpers\Tokens\IdTokenVerifier;
 
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Fitness\MSCommon\Exceptions\IDTokenVerificationException;
-use Fitness\MSCommon\Exceptions\UpstreamAPINonExistentException;
-use Fitness\MSCommon\Exceptions\UpstreamHTTPException;
-use Throwable;
-
-class TokenAuthController extends BaseController
+trait UsesAuth0
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
     public function getAuth0UserIdFromAccessToken(): ?string
     {
         $auth0 = \App::make('auth0');
