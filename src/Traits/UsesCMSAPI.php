@@ -7,12 +7,7 @@ use Fitness\MSCommon\Services\Cms;
 
 trait UsesCMSAPI
 {
-    /**
-     * @throws UpstreamHTTPException
-     * @throws FileNotFoundException
-     * @throws Throwable
-     */
-    public function getCmsApi($endpoint)
+    public function getCmsApiV1($endpoint)
     {
         if (strpos($_SERVER['PHP_SELF'],'phpunit') !== false) {
             $fixture = Storage::disk('cms-mocks')->get($endpoint . '.json');
