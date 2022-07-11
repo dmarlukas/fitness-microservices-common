@@ -14,12 +14,12 @@ trait Httpable
         return $app->runningInConsole();
     }
 
-    public function getStatusCode()
+    public function getStatusCode() : int
     {
         return $this->statusCode ?? 500;
     }
 
-    public function getHeaders()
+    public function getHeaders() : array
     {
         return $this->headers ?? [];
     }

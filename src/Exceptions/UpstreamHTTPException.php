@@ -9,7 +9,7 @@ use Exception;
 class UpstreamHTTPException extends Exception implements HttpExceptionInterface {
     use Httpable;
     protected $message = 'CMS_API_ENDPOINT not set';
-    public function getStatusCode()
+    public function getStatusCode() : int
     {
         return Response::HTTP_INTERNAL_SERVER_ERROR;
     }

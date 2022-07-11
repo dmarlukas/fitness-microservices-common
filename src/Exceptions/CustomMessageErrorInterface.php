@@ -9,5 +9,5 @@ interface CustomMessageErrorInterface
      *
      * @return string A custom error message that gets returned to the user
      */
-    public function getCustomMessage(): string;
+    public function getCustomMessage() : string;
 }

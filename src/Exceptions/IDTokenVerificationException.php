@@ -18,7 +18,8 @@ class IDTokenVerificationException extends Exception implements HttpExceptionInt
 
     protected $message = 'Expected an IDToken to be set, but none present or null value.';
 
-    public function getStatusCode() {
+    public function getStatusCode() : int
+    {
         return Response::HTTP_UNAUTHORIZED;
     }
 }
