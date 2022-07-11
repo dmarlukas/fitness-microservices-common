@@ -4,6 +4,7 @@ namespace Fitness\MSCommon\Traits;
 
 use Fitness\MSCommon\Models\User;
 use Fitness\MSCommon\Services\Subscription;
+use Fitness\MSCommon\Exceptions\IDTokenVerificationException;
 
 use Auth0\SDK\Helpers\JWKFetcher;
 use Auth0\SDK\Helpers\Tokens\AsymmetricVerifier;
@@ -11,6 +12,7 @@ use Auth0\SDK\Helpers\Tokens\IdTokenVerifier;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+
 
 trait UsesAuth0
 {
