@@ -7,7 +7,7 @@
         }
     },
     "require": {
-        "auth0/login": "^7.0",
+        "auth0/login": "^6.4",
         "guzzlehttp/guzzle": "^7.2"
     },
     "extra": {
