@@ -178,5 +178,6 @@ trait UsesAuth0
         if ($user) {
             return $user->id;
         }
+        return null;
     }
 }
