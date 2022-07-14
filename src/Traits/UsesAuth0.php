@@ -3,6 +3,7 @@
 namespace Fitness\MSCommon\Traits;
 
 use Fitness\MSCommon\Models\User;
+use Fitness\MSCommon\Models\AuthIds;
 use Fitness\MSCommon\Services\Subscription;
 use Fitness\MSCommon\Exceptions\IDTokenVerificationException;
 
@@ -12,7 +13,7 @@ use Auth0\SDK\Helpers\Tokens\IdTokenVerifier;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
-
+use Illuminate\Support\Str;
 
 trait UsesAuth0
 {
@@ -70,18 +71,18 @@ trait UsesAuth0
         } else {
             $userId = $user->id;
             $requestPath = request()->getPathInfo();
-            // Update the user info only on the initial login request
+            // TODO: Update the user info only on the initial login request
             // Cuts down on DB activity. So we're not doing this on
             // almost every request.
-            if ($requestPath == Auth0LoginController::LOGIN_PATH) {
-                $this->updateUser($user,
-                    $firstName,
-                    $lastName,
-                    $tokenArray['picture'],
-                    $tokenArray['sub'],
-                    $tokenArray['iss']
-                );
-            }
+            // if ($requestPath == Auth0LoginController::LOGIN_PATH) {
+            //     $this->updateUser($user,
+            //         $firstName,
+            //         $lastName,
+            //         $tokenArray['picture'],
+            //         $tokenArray['sub'],
+            //         $tokenArray['iss']
+            //     );
+            // }
         }
 
         return $userId;
@@ -191,14 +192,49 @@ trait UsesAuth0
     }
 
     /**
-     * @return ?int
+     * @return ?User
      */
-    private function getUserIdByEmail($email): ?int
+    private function getUserByEmail($email): ?User
     {
-        $user = User::where('email', $email)->first();
-        if ($user) {
-            return $user->id;
-        }
-        return null;
+        return User::whereEmail($email)->first();
+    }
+
+        /**
+     * @param $firstName // e.g - Jane
+     * @param $lastName // e.g - Blogs
+     * @param $email // e.g - jane@blog.com
+     * @param $profilePictureUrl // e.g - https://my-social-service.com/image.jpg
+     * @param $providerId // e.g - google-oauth2|109992762175512512345 or auth0|1231091230912312311
+     * @param $issuer // e.g - https://drip-fitness-dev.au.auth0.com/
+     * @return array
+     */
+    protected function insertUser(
+        $firstName,
+        $lastName,
+        $email,
+        $profilePictureUrl,
+        $providerId,
+        $issuer
+    ): string
+    {
+        $user = new User;
+        $user->uuid = Str::uuid()->toString();
+        $user->email = $email;
+        $user->first_name = $firstName;
+        $user->last_name = $lastName;
+        $user->profile_picture_url = $profilePictureUrl;
+        $user->save();
+
+        $this->insertAuthIDs($user->id, $providerId, $issuer);
+        return $user->id;
+    }
+
+    protected function insertAuthIDs($user_id, $providerId, $issuer)
+    {
+        $authId = new AuthIds;
+        $authId->provider_id = $providerId;
+        $authId->issuer = $issuer;
+        $authId->user_id = $user_id;
+        $authId->save();
     }
 }
