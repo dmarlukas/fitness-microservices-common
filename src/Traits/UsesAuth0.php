@@ -158,6 +158,8 @@ trait UsesAuth0
         // N.B - email sign ups through Auth0 web interface don't give any name except nickname.
         $firstName = $tokenArray['given_name'] ?? $tokenArray['nickname'];
         $lastName = $tokenArray['family_name'] ?? '';
+
+        if (!isset($tokenArray['email'])) throw new EmailMissingException();
         $email = $tokenArray['email'];
 
         try {
