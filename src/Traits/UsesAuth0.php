@@ -45,7 +45,7 @@ trait UsesAuth0
 
 
         // Access Token
-        $auth0 = \App::make('auth0');
+        $auth0 = \App::make('auth0')->getSdk();
         $token = $auth0->decode($idTokenString);
         if (!$token) throw new IDTokenVerificationException('Unable to extract payload from ID token');
 
