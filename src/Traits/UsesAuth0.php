@@ -24,6 +24,69 @@ trait UsesAuth0
         return $accessTokenInfo['sub'];
     }
 
+    /** 
+     * @return array
+     * @throws IDTokenVerificationException
+     */
+    function extractUserIdFromIdTokenAndAccessToken(): string
+    {
+        // This is a HACK and Security risk to workaround not having enough access to development tooling
+        // to simulate.
+
+        $forcedUserId = Config::get('app.forceLoggedInUserId');
+        $environment = Config::get('app.env');
+        if (in_array($environment, ['local', 'testing']) && $forcedUserId !== null && $forcedUserId !== '') {
+            return Config::get('app.forceLoggedInUserId');
+        }
+
+        // ID Token
+        $idTokenString = request()->header('X-IDToken');
+        if (!$idTokenString) throw new IDTokenVerificationException();
+
+
+        // Access Token
+        $auth0 = \App::make('auth0');
+        $token = $auth0->decode($idTokenString);
+        if (!$token) throw new IDTokenVerificationException('Unable to extract payload from ID token');
+
+        $tokenArray = $token->toArray();
+        // N.B - email sign ups through Auth0 web interface don't give any name except nickname.
+        $firstName = $tokenArray['given_name'] ?? $tokenArray['nickname'];
+        $lastName = $tokenArray['family_name'] ?? '';
+
+        if (!isset($tokenArray['email'])) throw new EmailMissingException();
+        $email = $tokenArray['email'];
+
+        $user = $this->getUserByEmail($email);
+        if (!$user) {
+            $userId = $this->insertUser(
+                $firstName,
+                $lastName,
+                $email,
+                $tokenArray['picture'],
+                $tokenArray['sub'],
+                $tokenArray['iss']
+            );
+        } else {
+            $userId = $user->id;
+            $requestPath = request()->getPathInfo();
+            // Update the user info only on the initial login request
+            // Cuts down on DB activity. So we're not doing this on
+            // almost every request.
+            if ($requestPath == Auth0LoginController::LOGIN_PATH) {
+                $this->updateUser($user,
+                    $firstName,
+                    $lastName,
+                    $tokenArray['picture'],
+                    $tokenArray['sub'],
+                    $tokenArray['iss']
+                );
+            }
+        }
+
+        return $userId;
+    }
+
     /**
      * @throws IDTokenVerificationException
      */
@@ -125,50 +188,6 @@ trait UsesAuth0
         // Cache the xc5 file for 1 day, to avoid querying this everytime someone logs in
         Cache::store('file')->put('jwksKeys', $jwks, now()->addDay());
         return $jwks;
-    }
-
-    /** 
-     * @return array
-     * @throws IDTokenVerificationException
-     */
-    function extractUserIdFromIdTokenAndAccessToken(): string
-    {
-        // This is a HACK and Security risk to workaround not having enough access to development tooling
-        // to simulate.
-
-        $forcedUserId = Config::get('app.forceLoggedInUserId');
-        $environment = Config::get('app.env');
-        if (in_array($environment, ['local', 'testing']) && $forcedUserId !== null && $forcedUserId !== '') {
-            return Config::get('app.forceLoggedInUserId');
-        }
-
-        // ID Token
-        $idToken = request()->header('X-IDToken');
-        if (!$idToken) throw new IDTokenVerificationException();
-
-        // payload of id token
-        $tokenArray = $this->verifyIDToken($idToken);
-        if (!$tokenArray) throw new IDTokenVerificationException('Unable to extract payload from ID token');
-
-        // Access Token
-        $auth0 = \App::make('auth0');
-        $accessToken = request()->bearerToken();
-        $accessTokenInfo = $auth0->decodeJWT($accessToken);
-
-        // N.B - email sign ups through Auth0 web interface don't give any name except nickname.
-        $firstName = $tokenArray['given_name'] ?? $tokenArray['nickname'];
-        $lastName = $tokenArray['family_name'] ?? '';
-
-        if (!isset($tokenArray['email'])) throw new EmailMissingException();
-        $email = $tokenArray['email'];
-
-        try {
-            $userId = $this->getUserIdByEmail($email);
-        } catch (\Exception $e) {
-            $errorString = $e->getMessage();
-        }
-
-        return $userId;
     }
 
     /**
