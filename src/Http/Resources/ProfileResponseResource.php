@@ -3,26 +3,13 @@
 namespace Fitness\MSCommon\Http\Resources;
 
 
-use App\Services\Subscription;
-use Fitness\MSCommon\Models\ProfileWebLinks;
-use Fitness\MSCommon\Models\User;
+use Fitness\MSCommon\Services\Subscription;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Config;
 
 class ProfileResponseResource extends JsonResource
 {
     public static $wrap = null;
-
-    protected User $user;
-    protected array $subscriptionInfo;
-    protected ProfileWebLinks $links;
-
-    public function __construct(User $user, $subscriptionInfo, ProfileWebLinks $links)
-    {
-        $this->user = $user;
-        $this->subscriptionInfo = $subscriptionInfo;
-        $this->links = $links;
-    }
 
     /**
      * Transform the resource into an array.
@@ -32,7 +19,7 @@ class ProfileResponseResource extends JsonResource
      */
     public function toArray($request)
     {
-        $user = $this->user;
+        $user = $this->resource;
 
         $data['user'] = [
             "userId" => $user->uuid,
@@ -41,14 +28,15 @@ class ProfileResponseResource extends JsonResource
             "email" => $user->email,
             "profilePictureUrl" => $user->profile_picture_url
         ];
+        $userId = $user->id;
+        $data['subscription'] = Subscription::fetchSubscriptionArray($userId);
 
-        $data['subscription'] = $this->subscriptionInfo;
-        $data['termsOfUseUrl'] = $this->links->termsOfUseUrl;
-        $data['privacyPolicyUrl'] = $this->links->privacyPolicyUrl;
-        $data['faqUrl'] = $this->links->faqUrl;
+        $data['termsOfUseUrl'] = Config::get('app.termsOfUseUrl');
+        $data['privacyPolicyUrl'] = Config::get('app.privacyPolicyUrl');
+        $data['faqUrl'] = Config::get('app.faqUrl');
         $data['share']['link'] = 'https://link.dripfitness.app/invite-friends';
         $data['share']['title'] = __("Invite Friends");
-        $data['share']['shareUrl'] = $this->links->shareUrl;
+        $data['share']['shareUrl'] = Config::get('app.websiteUrl');
         $data['share']['shareText'] = __("Try the Drip Fitness App to train with your friends");
         $data['share']['type'] = "shareButton";
 
