@@ -22,9 +22,7 @@ class Subscription
             ->get();
 
         if ($subscriptions->isEmpty()) {
-            Logger("Returning empty subscription object, userId: {$userId}, env: {$subscriptionEnvironment}");
             return [
-                "hasHeldSubscription" => false,
                 // Returning a 1970 date here instead of null. Null would be cleaner.
                 // The API spec was changed on 12th October, 2021 to make this nullable. Apps need to be updated
                 // first before we can return a null here.
@@ -46,7 +44,6 @@ class Subscription
         $lastSubscription = $subscriptions->first();
         $expiryDate = Carbon::parse($lastSubscription->expiry_date);
         return [
-            "hasHeldSubscription" => true, // This field is deprecated.
             "subscriptionExpiryDate" => $expiryDate->toAtomString(), // null if no subscription had or an ISO 8601 date if one has.
             "hasHadFreeTrial" => $hasHadFreeTrial, // Allows apps to show Trial UI if they haven't had a free trial.
             "autoRenews" => (bool)$lastSubscription->will_auto_renew, // Have they chosen to continue subscribing when current period ends?

@@ -7,20 +7,18 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Fitness\MSCommon\Exceptions\Httpable;
 
-class EmailMissingException extends Exception implements HttpExceptionInterface, CustomMessageErrorInterface
+class UserDoesNotExistException extends Exception implements HttpExceptionInterface, CustomMessageErrorInterface
 {
     use Httpable;
-    protected $message;
-    const EMAIL_MISSING_ERROR_CODE = 420;
 
-    public function __construct($message = 'Unable to retrieve email, please ensure your login method has access to your email.')
+    public function __construct($message = "User not found.")
     {
         $this->message = $message;
     }
 
-    public function getStatusCode()
+    public function getStatusCode() : int
     {
-        return self::EMAIL_MISSING_ERROR_CODE;
+        return Response::HTTP_NOT_FOUND;
     }
 
     public function getCustomMessage(): string
