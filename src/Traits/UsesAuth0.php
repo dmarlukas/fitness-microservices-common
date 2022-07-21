@@ -66,13 +66,15 @@ trait UsesAuth0
         // The API Gateway Authoriser has already ensured we have a valid
         // token, decode the contents for user lookup
         $accessToken = $this->decodeAccessToken();
+        // Name space used when injecting the user info into the access_token
+        $userDataNameSpace = 'https://templ.app/';
 
         // N.B - email sign ups through Auth0 web interface don't give any name except nickname.
-        $firstName = $accessToken['given_name'] ?? $accessToken['nickname'];
-        $lastName = $accessToken['family_name'] ?? '';
+        $firstName = $accessToken[$userDataNameSpace . 'given_name'] ?? $accessToken[$userDataNameSpace . 'nickname'];
+        $lastName = $accessToken[$userDataNameSpace . 'family_name'] ?? '';
 
-        if (!isset($accessToken['email'])) throw new EmailMissingException();
-        $email = $accessToken['email'];
+        if (!isset($accessToken[$userDataNameSpace . 'email'])) throw new EmailMissingException();
+        $email = $accessToken[$userDataNameSpace . 'email'];
 
         $user = $this->getUserByEmail($email);
         if (!$user) {
@@ -80,7 +82,7 @@ trait UsesAuth0
                 $firstName,
                 $lastName,
                 $email,
-                $accessToken['picture'],
+                $accessToken[$userDataNameSpace . 'picture'],
                 $accessToken['sub'],
                 $accessToken['iss']
             );
@@ -90,7 +92,7 @@ trait UsesAuth0
             $this->updateUser($user,
                 $firstName,
                 $lastName,
-                $accessToken['picture'],
+                $accessToken[$userDataNameSpace . 'picture'],
                 $accessToken['sub'],
                 $accessToken['iss']
             );
