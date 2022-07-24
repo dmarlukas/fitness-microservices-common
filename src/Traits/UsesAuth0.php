@@ -18,18 +18,27 @@ use Illuminate\Support\Str;
 
 trait UsesAuth0
 {
-    function decodeAccessToken(): array
+
+    /**
+     * Gets the bearer token and decodes it, returns as array
+     * @throws IDTokenVerificationException
+    */
+    function decodeAccessTokenToArray(): array
     {
         $auth0 = \App::make('auth0')->getSdk();
         $accessToken = request()->bearerToken();
-        return $auth0->decode($accessToken);
+        if (!isset($accessToken)) throw new IDTokenVerificationException();
+
+        $decoded = $auth0->decode($accessToken);
+        if (!isset($decoded)) throw new IDTokenVerificationException();
+
+        return $decoded->toArray();
     }
 
     /**
      * Returns the user id from the access token, assumes the session
      * has already been logged in
      * @return string
-     * @throws IDTokenVerificationException
      * @throws EmailMissingException
      * @throws UserDoesNotExistException
      */
@@ -39,7 +48,7 @@ trait UsesAuth0
             return $forcedUserId;
         }
 
-        $accessToken = $this->decodeAccessToken();
+        $accessToken = $this->decodeAccessTokenToArray();
         if (!isset($accessToken['email'])) throw new EmailMissingException();
 
         $user = $this->getUserByEmail($accessToken['email']);
@@ -65,7 +74,7 @@ trait UsesAuth0
 
         // The API Gateway Authoriser has already ensured we have a valid
         // token, decode the contents for user lookup
-        $accessToken = $this->decodeAccessToken();
+        $accessToken = $this->decodeAccessTokenToArray();
         // Name space used when injecting the user info into the access_token
         $userDataNameSpace = 'https://templ.app/';
 
