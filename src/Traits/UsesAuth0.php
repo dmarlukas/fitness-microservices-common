@@ -20,9 +20,9 @@ trait UsesAuth0
 {
     function decodeAccessToken(): array
     {
-        $auth0 = \App::make('auth0');
+        $auth0 = \App::make('auth0')->getSdk();
         $accessToken = request()->bearerToken();
-        return $auth0->decodeJWT($accessToken);
+        return $auth0->decode($accessToken);
     }
 
     /**
