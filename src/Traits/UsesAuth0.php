@@ -66,8 +66,8 @@ trait UsesAuth0
      */
     function extractUserFromAccessToken(): User
     {
-        if ($forcedUserId = $this->forceUserId()) {
-            return $forcedUserId;
+        if ($forcedUser = $this->forceUser()) {
+            return $forcedUser;
         }
 
         $accessToken = $this->payloadFromBearerToken();
@@ -88,17 +88,17 @@ trait UsesAuth0
     /**
      * Handles a new login session, creates/updates the user
      * and returns their user ID
-     * @return string
+     * @return User
      * @throws IDTokenVerificationException
      * @throws EmailMissingException
      * @throws MissingAccessTokenException
      * @throws MissingEnvVarException
      * @throws InvalidAccessTokenException
      */
-    function userIdForNewLoginSession(): string
+    function userForNewLoginSession(): User
     {
-        if ($forcedUserId = $this->forceUserId()) {
-            return $forcedUserId;
+        if ($forcedUser = $this->forceUser()) {
+            return $forcedUser;
         }
 
         // The API Gateway Authoriser has already ensured we have a valid
@@ -118,7 +118,7 @@ trait UsesAuth0
 
         $user = $this->getUserByEmail($email);
         if (!$user) {
-            $userId = $this->insertUser(
+            $user = $this->insertUser(
                 $firstName,
                 $lastName,
                 $email,
@@ -127,8 +127,6 @@ trait UsesAuth0
                 $accessToken['iss']
             );
         } else {
-            $userId = $user->id;
-
             $this->updateUser($user,
                 $firstName,
                 $lastName,
@@ -138,17 +136,20 @@ trait UsesAuth0
             );
         }
 
-        return $userId;
+        return $user;
     }
 
-    protected function forceUserId(): ?string
+    protected function forceUser(): ?User
     {
         // This is a HACK and Security risk to workaround not having enough access to development tooling
         // to simulate.
         $forcedUserId = Config::get('app.forceLoggedInUserId');
         $environment = Config::get('app.env');
         if (in_array($environment, ['local', 'testing']) && $forcedUserId !== null && $forcedUserId !== '') {
-            return Config::get('app.forceLoggedInUserId');
+            $id = Config::get('app.forceLoggedInUserId');
+            if ($id) {
+                return User::whereId($id);
+            }
         }
 
         return null;
@@ -178,7 +179,7 @@ trait UsesAuth0
         $profilePictureUrl,
         $providerId,
         $issuer
-    ): string
+    ): User
     {
         $user = new User;
         $user->uuid = Str::uuid()->toString();
@@ -189,7 +190,7 @@ trait UsesAuth0
         $user->save();
 
         $this->insertAuthIDs($user->id, $providerId, $issuer);
-        return $user->id;
+        return $user;
     }
 
     protected function insertAuthIDs($user_id, $providerId, $issuer)
