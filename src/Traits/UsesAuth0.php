@@ -193,6 +193,30 @@ trait UsesAuth0
         return $user;
     }
 
+    protected function updateUser(
+        User $user,
+             $firstName,
+             $lastName,
+             $profilePicture,
+             $providerId,
+             $issuer)
+    {
+        $user->updated_at = now();
+        $user->first_name = $firstName;
+        $user->last_name = $lastName;
+        $user->profile_picture_url = $profilePicture;
+        $user->save();
+
+        $authId = $user->authIds()->where([
+            "provider_id" => $providerId,
+            "issuer" => $issuer
+        ])->first();
+
+        if ($authId == null) {
+            $this->insertAuthIDs($user->id, $providerId, $issuer);
+        }
+    }
+
     protected function insertAuthIDs($user_id, $providerId, $issuer)
     {
         $authId = new AuthIds;
