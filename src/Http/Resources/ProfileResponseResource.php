@@ -31,13 +31,13 @@ class ProfileResponseResource extends JsonResource
         $userId = $user->id;
         $data['subscription'] = Subscription::fetchSubscriptionArray($userId);
 
-        $data['termsOfUseUrl'] = Config::get('app.termsOfUseUrl');
-        $data['privacyPolicyUrl'] = Config::get('app.privacyPolicyUrl');
-        $data['faqUrl'] = Config::get('app.faqUrl');
-        $data['share']['link'] = 'https://link.dripfitness.app/invite-friends';
+        $data['termsOfUseUrl'] = env('TERMS_OF_USE_LINK', '');
+        $data['privacyPolicyUrl'] = env('PRIVACY_POLICY_LINK', '');
+        $data['faqUrl'] = env('FAQ_LINK', '');
+        $data['share']['link'] = 'https://link.templfitness.app/invite-friends';
         $data['share']['title'] = __("Invite Friends");
-        $data['share']['shareUrl'] = Config::get('app.websiteUrl');
-        $data['share']['shareText'] = __("Try the Drip Fitness App to train with your friends");
+        $data['share']['shareUrl'] = env('WEBSITE_SHARE_LINK', '');
+        $data['share']['shareText'] = __("Share text");
         $data['share']['type'] = "shareButton";
 
         return $data;
