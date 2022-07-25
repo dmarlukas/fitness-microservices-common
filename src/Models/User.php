@@ -73,11 +73,7 @@ class User extends Authenticatable
 
     public function authIds()
     {
-        return $this->hasMany(AuthIDs::class);
+        return $this->hasMany(AuthIds::class);
     }
 
-    public function activeActivity()
-    {
-        return $this->hasOne(ActiveActivity::class);
-    }
 }
