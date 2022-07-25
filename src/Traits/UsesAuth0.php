@@ -3,6 +3,9 @@
 namespace Fitness\MSCommon\Traits;
 
 use Fitness\MSCommon\Exceptions\EmailMissingException;
+use Fitness\MSCommon\Exceptions\InvalidAccessTokenException;
+use Fitness\MSCommon\Exceptions\MissingAccessTokenException;
+use Fitness\MSCommon\Exceptions\MissingEnvVarException;
 use Fitness\MSCommon\Exceptions\UserDoesNotExistException;
 use Fitness\MSCommon\Models\User;
 use Fitness\MSCommon\Models\AuthIds;
@@ -36,24 +39,47 @@ trait UsesAuth0
     }
 
     /**
-     * Returns the user id from the access token, assumes the session
+     * Gets the payload from the bearer token, returns as array
+     * @throws MissingAccessTokenException
+     * @throws InvalidAccessTokenException
+     */
+    private function payloadFromBearerToken(): array
+    {
+        $accessToken = request()->bearerToken();
+        if (!isset($accessToken)) throw new MissingAccessTokenException();
+        $parts = explode('.', $accessToken);
+
+        if (count($parts) != 3) throw new InvalidAccessTokenException();
+        // Return the payload part of the token
+        return json_decode(base64_decode($parts[1]), true);
+    }
+
+    /**
+     * Returns the user associated with the access token, assumes the session
      * has already been logged in
      * @return string
      * @throws EmailMissingException
      * @throws UserDoesNotExistException
+     * @throws MissingAccessTokenException
+     * @throws MissingEnvVarException
+     * @throws InvalidAccessTokenException
      */
-    function extractUserIdFromAccessToken(): string
+    function extractUserFromAccessToken(): User
     {
         if ($forcedUserId = $this->forceUserId()) {
             return $forcedUserId;
         }
 
-        $accessToken = $this->decodeAccessTokenToArray();
-        if (!isset($accessToken['email'])) throw new EmailMissingException();
+        $accessToken = $this->payloadFromBearerToken();
+        $userDataNameSpace = env('AUTH0_ACCESS_TOKEN_NAMESPACE');
 
-        $user = $this->getUserByEmail($accessToken['email']);
+        if (!$userDataNameSpace) throw new MissingEnvVarException();
+
+        if (!isset($accessToken[$userDataNameSpace . 'email'])) throw new EmailMissingException();
+
+        $user = $this->getUserByEmail($accessToken[$userDataNameSpace . 'email']);
         if ($user) {
-            return $user->id;
+            return $user;
         } else {
             throw new UserDoesNotExistException();
         }
@@ -65,6 +91,9 @@ trait UsesAuth0
      * @return string
      * @throws IDTokenVerificationException
      * @throws EmailMissingException
+     * @throws MissingAccessTokenException
+     * @throws MissingEnvVarException
+     * @throws InvalidAccessTokenException
      */
     function userIdForNewLoginSession(): string
     {
@@ -73,10 +102,12 @@ trait UsesAuth0
         }
 
         // The API Gateway Authoriser has already ensured we have a valid
-        // token, decode the contents for user lookup
-        $accessToken = $this->decodeAccessTokenToArray();
+        // token, get the payload for user lookup
+        $accessToken = $this->payloadFromBearerToken();
         // Name space used when injecting the user info into the access_token
-        $userDataNameSpace = 'https://templ.app/';
+        $userDataNameSpace = env('AUTH0_ACCESS_TOKEN_NAMESPACE');
+
+        if (!$userDataNameSpace) throw new MissingEnvVarException();
 
         // N.B - email sign ups through Auth0 web interface don't give any name except nickname.
         $firstName = $accessToken[$userDataNameSpace . 'given_name'] ?? $accessToken[$userDataNameSpace . 'nickname'];
