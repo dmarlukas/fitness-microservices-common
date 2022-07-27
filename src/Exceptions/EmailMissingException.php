@@ -18,7 +18,7 @@ class EmailMissingException extends Exception implements HttpExceptionInterface,
         $this->message = $message;
     }
 
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return self::EMAIL_MISSING_ERROR_CODE;
     }
