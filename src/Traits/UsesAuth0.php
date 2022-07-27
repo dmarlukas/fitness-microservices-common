@@ -146,7 +146,7 @@ trait UsesAuth0
         $forcedUserId = env('FORCE_LOGGED_IN_USER_ID');
         $environment = Config::get('app.env');
         if (in_array($environment, ['local', 'testing']) && $forcedUserId !== null && $forcedUserId !== '') {
-            return User::whereId($forcedUserId);
+            return User::whereId($forcedUserId)->first();
         }
 
         return null;
