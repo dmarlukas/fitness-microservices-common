@@ -143,13 +143,10 @@ trait UsesAuth0
     {
         // This is a HACK and Security risk to workaround not having enough access to development tooling
         // to simulate.
-        $forcedUserId = Config::get('app.forceLoggedInUserId');
+        $forcedUserId = env('FORCE_LOGGED_IN_USER_ID');
         $environment = Config::get('app.env');
         if (in_array($environment, ['local', 'testing']) && $forcedUserId !== null && $forcedUserId !== '') {
-            $id = Config::get('app.forceLoggedInUserId');
-            if ($id) {
-                return User::whereId($id);
-            }
+            return User::whereId($forcedUserId);
         }
 
         return null;
