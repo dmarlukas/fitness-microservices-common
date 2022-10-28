@@ -50,8 +50,17 @@ trait UsesAuth0
         $parts = explode('.', $accessToken);
 
         if (count($parts) != 3) throw new InvalidAccessTokenException();
+
+        // Ensure the payload is escaped properly, depending on the contents of the base64 encoded payload
+        // '_' can be interpreted as a ' ' space when running it through php's base64_decode which results
+        // in a garbled object that fails the json_decode() step.
+        //
+        // To fix we replace all instances of '_' with '/' before running it through base64_decode()
+        // https://stackoverflow.com/questions/12151156/base64-decode-adding-strange-characters
+        $escapedPayload = strtr($parts[1], '-_', '+/');
+
         // Return the payload part of the token
-        return json_decode(base64_decode($parts[1]), true);
+        return json_decode(base64_decode($escapedPayload), true);
     }
 
     /**
