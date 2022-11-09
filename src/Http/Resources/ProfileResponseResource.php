@@ -27,7 +27,7 @@ class ProfileResponseResource extends JsonResource
             "lastName" => $user->last_name,
             "email" => $user->email,
             "profilePictureUrl" => $user->profile_picture_url,
-            "isOnboarded" => false
+            "isOnboarded" => $user->is_onboarded
         ];
         $userId = $user->id;
         $data['subscription'] = Subscription::fetchSubscriptionArray($userId);
