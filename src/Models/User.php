@@ -69,6 +69,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
+        'is_onboarded' => 'boolean',
         'email_verified_at' => 'datetime',
     ];
 
