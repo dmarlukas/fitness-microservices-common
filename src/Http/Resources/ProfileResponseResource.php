@@ -27,7 +27,7 @@ class ProfileResponseResource extends JsonResource
             "lastName" => $user->last_name,
             "email" => $user->email,
             "profilePictureUrl" => $user->profile_picture_url,
-            "isOnboarded" => boolval($user->is_onboarded)
+            "isOnboarded" => boolval($user->is_onboarded),
             "goal" => $user->goal,
             "targetArea" => $user->target_area
         ];
