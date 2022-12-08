@@ -22,12 +22,15 @@ class ProfileResponseResource extends JsonResource
         $user = $this->resource;
 
         $data['user'] = [
-            "userId" => $user->uuid,
+            "id" => $user->uuid,
             "firstName" => $user->first_name,
             "lastName" => $user->last_name,
             "email" => $user->email,
             "profilePictureUrl" => $user->profile_picture_url,
-            "isOnboarded" => $user->is_onboarded
+            "isOnboarded" => boolval($user->is_onboarded),
+            "goal" => $user->goal,
+            "targetArea" => $user->targetArea,
+            "enrolledProgram" => $user->enrolled_program,
         ];
         $userId = $user->id;
         $data['subscription'] = Subscription::fetchSubscriptionArray($userId);
