@@ -18,7 +18,7 @@ class Cms
                 'ACCESS-TOKEN' => $envToken
             ])->get($url, $params))->status() === 200) {
             $responseString = $response->body();
-            return json_decode($responseString, true);
+            return json_decode($responseString, true) ?? $responseString;
         }
 
         return null;
