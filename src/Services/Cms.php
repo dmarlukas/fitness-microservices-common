@@ -12,8 +12,7 @@ class Cms
     {
         $cmsApiEndpoint = env('CMS_API_ENDPOINT', false);
 
-        $url = rtrim($cmsApiEndpoint, '/') . '/' . $path;
-
+        $url = rtrim($cmsApiEndpoint, '/') . '/' . ltrim($path, '/');
         $envToken = Config::get('app.accessToken');
         if (($response = Http::withHeaders([
                 'ACCESS-TOKEN' => $envToken
