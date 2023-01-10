@@ -136,9 +136,12 @@ trait UsesAuth0
                 $accessToken['iss']
             );
         } else {
+            // First name & last name are taken from our DB resource, this is because those fields could have
+            // been updated in our onboarding process or user profile update. Which will not be available
+            // on the auth0 bearer token
             $this->updateUser($user,
-                $firstName,
-                $lastName,
+                $user->first_name,
+                $user->last_name,
                 $accessToken[$userDataNameSpace . 'picture'],
                 $accessToken['sub'],
                 $accessToken['iss']
