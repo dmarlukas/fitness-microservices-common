@@ -11,6 +11,14 @@ class ProfileResponseResource extends JsonResource
 {
     public static $wrap = null;
 
+    public string $providerId;
+
+    public function __construct($resource, string $providerId = null)
+    {
+        parent::__construct($resource);
+        $this->providerId = $providerId;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -44,13 +52,14 @@ class ProfileResponseResource extends JsonResource
         $data['share']['type'] = "shareButton";
 
         $data['signinMethod'] = null;
-        if ($providerId !== null) {
+        if ($this->providerId !== null) {
+            $id = strtolower($this->providerId);
             // Either apple, google, usernamepassword
-            if (substr( strtolower($providerId), 0, 5 ) === 'apple') {
+            if (substr( $id, 0, 5 ) === 'apple') {
                 $data['signinMethod'] = 'apple';
-            } elseif (substr( strtolower($providerId), 0, 6 ) === 'google') {
+            } elseif (substr( $id, 0, 6 ) === 'google') {
                 $data['signinMethod'] = 'google';
-            } elseif (substr( strtolower($providerId), 0, 5 ) === 'auth0') {
+            } elseif (substr( $id, 0, 5 ) === 'auth0') {
                 $data['signinMethod'] = 'usernamepassword';
             }
         }
