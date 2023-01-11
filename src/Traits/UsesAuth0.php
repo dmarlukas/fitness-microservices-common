@@ -159,6 +159,14 @@ trait UsesAuth0
      */
     function issuerDetails(): array
     {
+        if ($forcedUser = $this->forceUser()) {
+            $ids = $forcedUser->authIds()->first();
+            return [
+                "issuer" => $ids['issuer'] ?? '',
+                "provider" => $ids['provider_id'] ?? ''
+            ];
+        }
+
         $accessToken = $this->payloadFromBearerToken();
         return [
             "issuer" => $accessToken['iss'],

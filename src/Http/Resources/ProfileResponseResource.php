@@ -17,7 +17,7 @@ class ProfileResponseResource extends JsonResource
      * @param \Illuminate\Http\Request $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request, string $providerId = null)
     {
         $user = $this->resource;
 
@@ -32,6 +32,7 @@ class ProfileResponseResource extends JsonResource
             "targetArea" => $user->targetArea,
             "enrolledProgram" => $user->enrolled_program,
         ];
+
         $userId = $user->id;
         $data['subscription'] = Subscription::fetchSubscriptionArray($userId);
         $data['settings'] = $this->settingsLinks();
@@ -41,6 +42,18 @@ class ProfileResponseResource extends JsonResource
         $data['share']['shareUrl'] = env('WEBSITE_SHARE_LINK', '');
         $data['share']['shareText'] = __("Share text");
         $data['share']['type'] = "shareButton";
+
+        $data['signinMethod'] = null;
+        if ($providerId !== null) {
+            // Either apple, google, usernamepassword
+            if (substr( strtolower($providerId), 0, 5 ) === 'apple') {
+                $data['signinMethod'] = 'apple';
+            } elseif (substr( strtolower($providerId), 0, 6 ) === 'google') {
+                $data['signinMethod'] = 'google';
+            } elseif (substr( strtolower($providerId), 0, 5 ) === 'auth0') {
+                $data['signinMethod'] = 'usernamepassword';
+            }
+        }
 
         return $data;
     }
