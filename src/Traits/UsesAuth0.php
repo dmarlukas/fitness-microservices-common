@@ -151,6 +151,21 @@ trait UsesAuth0
         return $user;
     }
 
+    /**
+     * Returns the issuer & provider details associated with the Bearer Token
+     * @return array
+     * @throws MissingAccessTokenException
+     * @throws InvalidAccessTokenException
+     */
+    function issuerDetails(): array
+    {
+        $accessToken = $this->payloadFromBearerToken();
+        return [
+            "issuer" => $accessToken['iss'],
+            "provider" => $accessToken['sub']
+        ];
+    }
+
     protected function forceUser(): ?User
     {
         // This is a HACK and Security risk to workaround not having enough access to development tooling
